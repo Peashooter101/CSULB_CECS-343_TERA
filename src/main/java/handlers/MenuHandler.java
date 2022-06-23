@@ -34,4 +34,11 @@ public class MenuHandler {
 
     }
 
+    /**
+     * Used to deliver system messages directly to the user.
+     */
+    public static void systemMessage(String message) {
+        System.out.println("[SYSTEM] " + message);
+    }
+
 }
