@@ -20,6 +20,13 @@ Software Engineering Resources Utilized:
 - Collaboration Diagram (Activity 8)
 - State Diagram (Activity 9)
 
+## Programming Resource Links
+
+- [Singleton Pattern for FileHandler / MenuHandler](https://www.geeksforgeeks.org/singleton-class-java/)
+- [Read/Write Java to JSON (Jackson)](https://kodejava.org/how-to-read-and-write-java-object-to-json-file/)
+- [JSON Object Mapper (Jackson)](https://www.baeldung.com/jackson-object-mapper-tutorial)
+- [Relative Path File and Directory Creation](https://stackoverflow.com/questions/9658297/java-how-to-create-a-file-in-a-directory-using-relative-path)
+
 ## Developers
 
 [Chieng, Darian](https://github.com/joe-schmoe4)
