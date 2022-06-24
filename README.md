@@ -38,7 +38,7 @@ Software Engineering Resources Utilized:
 
 - [Introduction to Maven Dependencies](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)
 
-~~~~
+
 - [IntelliJ IDE Maven Support](https://www.jetbrains.com/help/idea/maven-support.html)
 - [Eclipse IDE Maven Tutorial](https://rdf4j.org/documentation/tutorials/maven-eclipse-project/)
 
