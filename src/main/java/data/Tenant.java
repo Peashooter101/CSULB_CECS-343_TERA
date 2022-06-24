@@ -20,7 +20,8 @@ public class Tenant {
 
     /**
      * Default Constructor
-     * Used by Jackson for JSON Mapper Reading
+     * Used by Jackson for JSON Mapper Reading.
+     * Using this on its own accomplishes nothing.
      */
     public Tenant() {}
 
@@ -51,22 +52,17 @@ public class Tenant {
      * Loads a Tenant from a String into Memory
      * @return True if successful, False otherwise.
      */
-    public static boolean loadTenants(ObjectMapper mapper, String data) {
-        if (!Thread.currentThread().getStackTrace()[2].getClassName().equals(FileHandler.class.getName())) {
+    public static boolean loadTenants(ArrayList<Tenant> data) {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        if ((stack.length >= 3) && !(stack[2].getClassName().equals(FileHandler.class.getName()))) {
             MenuHandler.systemMessage("An unknown class tried to edit the Tenants list.");
             return false;
         }
-        if (data == null) {
+        if (data == null || data.isEmpty()) {
             MenuHandler.systemMessage("No data found in tenant.json... Ignoring...");
             return true;
         }
-        try {
-            Tenant.tenants = mapper.readValue(data, new TypeReference<>() {});
-        }
-        catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return false;
-        }
+        Tenant.tenants = data;
         return true;
     }
 

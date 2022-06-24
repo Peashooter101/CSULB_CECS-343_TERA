@@ -1,5 +1,6 @@
 package handlers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import data.Tenant;
@@ -41,9 +42,8 @@ public class FileHandler {
     public boolean loadData() {
         try {
             if (fileTenant.exists()) {
-                Scanner scanner = new Scanner(fileTenant);
-                String list =  scanner.hasNextLine() ? scanner.nextLine() : null;
-                Tenant.loadTenants(mapper, list);
+                ArrayList<Tenant> data = mapper.readValue(fileTenant, new TypeReference<>() {});
+                Tenant.loadTenants(data);
             } else {
                 MenuHandler.systemMessage("Tenant save file does not exist, ignoring...");
             }
