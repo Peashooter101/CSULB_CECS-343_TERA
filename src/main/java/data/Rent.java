@@ -51,6 +51,14 @@ public class Rent {
             MenuHandler.systemMessage("Attempted to add Rent but there is no valid Tenant to associate to.");
             return null;
         }
+        if (month < 1 || month > 12) {
+            MenuHandler.systemMessage("Attempted to add Rent but the month is invalid.");
+            return null;
+        }
+        if (year < 0) {
+            MenuHandler.systemMessage("Attempted to add Rent but the year is invalid.");
+            return null;
+        }
         Rent r = new Rent(tenant.getId(), year, month, payment);
         rent.add(r);
         return r;
@@ -91,4 +99,25 @@ public class Rent {
         return Collections.unmodifiableList(rent);
     }
 
+    public Tenant getTenant() { return Tenant.getTenantByID(tenantId); }
+    public int getMonth() { return month; }
+    public int getYear() { return year; }
+    public double getPayment() { return payment; }
+
+
+    /**
+     * Returns if the rent is the same rent.
+     * Performs the checks on all attributes.
+     * @param o Object
+     * @return True if (this == o), false otherwise.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) { return true; }
+        if (!(o instanceof Rent r)) { return false; }
+        return this.getTenant().equals(r.getTenant()) &&
+                this.getMonth() == r.getMonth() &&
+                this.getYear() == r.getYear() &&
+                this.getPayment() == r.getPayment();
+    }
 }
