@@ -3,6 +3,7 @@ package handlers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import data.Rent;
 import data.Tenant;
 
 import java.io.File;
@@ -41,11 +42,19 @@ public class FileHandler {
      */
     public boolean loadData() {
         try {
+            // Loading Tenant File
             if (fileTenant.exists()) {
                 ArrayList<Tenant> data = mapper.readValue(fileTenant, new TypeReference<>() {});
                 Tenant.loadTenants(data);
             } else {
                 MenuHandler.systemMessage("Tenant save file does not exist, ignoring...");
+            }
+            // Loading Tenant File
+            if (fileRent.exists()) {
+                ArrayList<Rent> data = mapper.readValue(fileRent, new TypeReference<>() {});
+                Rent.loadRent(data);
+            } else {
+                MenuHandler.systemMessage("Rent save file does not exist, ignoring...");
             }
         } catch (IOException e) {
             e.printStackTrace();

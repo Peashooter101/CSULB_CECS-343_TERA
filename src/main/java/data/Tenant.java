@@ -49,7 +49,9 @@ public class Tenant {
     }
 
     /**
-     * Loads a Tenant from a String into Memory
+     * Loads a Tenant from a File into Memory
+     * Can only be called from FileHandler.class
+     * @param data ArrayList loaded from a File.
      * @return True if successful, False otherwise.
      */
     public static boolean loadTenants(ArrayList<Tenant> data) {
@@ -78,6 +80,18 @@ public class Tenant {
     public UUID getId() { return this.id; }
     public String getName() { return this.name; }
     public int getAptNum() { return this.aptNum; }
+
+    /**
+     * Returns a Tenant Object based on the ID.
+     * @param id UUID to search for.
+     * @return Tenant Object, null if not found.
+     */
+    public static Tenant getTenantByID(UUID id) {
+        for (Tenant t : tenants) {
+            if (t.getId().equals(id)) { return t; }
+        }
+        return null;
+    }
 
     /**
      * Returns if the tenant is the same tenant.
