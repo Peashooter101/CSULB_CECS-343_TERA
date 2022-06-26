@@ -5,6 +5,8 @@ import data.Tenant;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.Scanner;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class MenuHandler {
 
@@ -129,17 +131,49 @@ public class MenuHandler {
         Scanner obj = new Scanner(System.in);
         System.out.print("Enter tenant's name: ");
         String name = obj.nextLine();
-        System.out.print("Enter amount paid: ");
-        double amount  = getPositiveDouble();
-        System.out.print("Enter month rent is for (1-12): ");
-        int month = getIntRange(1,12);
 
+        int duplicateNames = 0;
         //Checks if tenant is already in arraylist. If yes, then record his rent.
         List<Tenant> tenantList = Tenant.getTenants();
         for (Tenant t : tenantList){
             if (t.getName().equals(name)){
-                Rent.addRent(Tenant.getTenantByID(t.getId()),1, month, amount);
+                duplicateNames += 1;
             }
+        }
+
+        // If there's no duplicates
+        if (duplicateNames == 1){
+            System.out.print("Enter amount paid: ");
+            double amount  = getPositiveDouble();
+            System.out.print("Enter month rent is for (1-12): ");
+            int month = getIntRange(1,12);
+            for (Tenant t : tenantList) {
+                Rent.addRent(Tenant.getTenantByID(t.getId()), 1, month, amount);
+            }
+        }
+
+        // Makes user choose which duplicate name they'd like to record rent for.
+        // Uses a hashmap to store the choice and UUID of duplicate.
+        int duplicateChoice;
+        if (duplicateNames >= 2){
+            HashMap<Integer, UUID> map = new HashMap<Integer, UUID>();
+            System.out.println("There is a duplicate name in your system!");
+            System.out.println("Please choose which person you'd like to choose based on their apartment number: ");
+            int choice = 1;
+            for (Tenant t : tenantList){
+                if (t.getName().equals(name)){
+                    System.out.println(choice + ". " + t.getName() + ": Apartment Number " + t.getAptNum());
+                    map.put(choice, t.getId());
+                    choice += 1;
+                }
+            }
+            duplicateChoice = getIntRange(1, choice);
+
+            System.out.print("Enter amount paid: ");
+            double amount  = getPositiveDouble();
+            System.out.print("Enter month rent is for (1-12): ");
+            int month = getIntRange(1,12);
+            Rent.addRent(Tenant.getTenantByID(map.get(duplicateChoice)), 1, month, amount);
         }
     }
 
