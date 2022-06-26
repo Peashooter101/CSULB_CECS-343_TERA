@@ -43,7 +43,7 @@ public class Rent {
      * @param payment Payment Total
      * @return Rent object added.
      */
-    private static Rent addRent(Tenant tenant, int year, int month, double payment) {
+    public static Rent addRent(Tenant tenant, int year, int month, double payment) {
         if (rent == null) {
             rent = new ArrayList<>();
         }

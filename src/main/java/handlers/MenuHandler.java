@@ -1,4 +1,9 @@
 package handlers;
+import data.Rent;
+import data.Tenant;
+
+import java.security.KeyStore;
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuHandler {
@@ -69,14 +74,21 @@ public class MenuHandler {
         System.out.println("[SYSTEM] " + message);
     }
 
+    /**
+     * Prompts tenant menu
+     */
     public void promptTenantMenu() {
         Scanner obj = new Scanner(System.in);
         System.out.print("Enter tenant's name: ");
         String name = obj.nextLine();
         System.out.print("Enter tenant's apartment number: ");
         int number = getPositiveInt();
+        Tenant.addTenant(name, number);
     }
 
+    /**
+     * Prompts rent menu
+     */
     public void promptRentMenu() {
         Scanner obj = new Scanner(System.in);
         System.out.print("Enter tenant's name: ");
@@ -85,8 +97,17 @@ public class MenuHandler {
         double amount  = getPositiveDouble();
         System.out.print("Enter month rent is for (1-12): ");
         int month = getIntRange(1,12);
+        List<Tenant> tenantList = Tenant.getTenants();
+        for (Tenant t : tenantList){
+            if (t.getName().equals(name)){
+                Rent.addRent(Tenant.getTenantByID(t.getId()),1, month, amount);
+            }
+        }
     }
 
+    /**
+     * Prompts expense menu
+     */
     public void promptExpenseMenu() {
         Scanner obj = new Scanner(System.in);
         System.out.print("Enter month (1-12): ");
@@ -106,6 +127,9 @@ public class MenuHandler {
 
     }
 
+    /**
+     * Takes in an input, validates input for correct range and returns it
+     */
     public int getIntRange( int low, int high ) {
         Scanner in = new Scanner( System.in );
         int input = 0;
@@ -127,6 +151,9 @@ public class MenuHandler {
         return input;
     }
 
+    /**
+     * Takes in an input, validates input for positive int and returns it
+     */
     public int getPositiveInt( ) {
         Scanner in = new Scanner( System.in );
         int input = 0;
@@ -147,6 +174,9 @@ public class MenuHandler {
         return input;
     }
 
+    /**
+     * Takes in an input, validates input for positive double and returns it
+     */
     public double getPositiveDouble( ) {
         Scanner in = new Scanner( System.in );
         double input = 0.0;
@@ -166,11 +196,5 @@ public class MenuHandler {
         }
         return input;
     }
-
-
-
-
-
-
 
 }

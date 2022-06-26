@@ -13,8 +13,8 @@ public class Main {
 //        while (!menu.promptLogin()) {
 //            // TODO: Invalid Login Details Logic
 //        }
-//        // Load Saved Data
-//        file.loadData();
+        // Load Saved Data
+        file.loadData();
 
         while(true) {
             // Prompt Main Menu
