@@ -37,13 +37,27 @@ public class MenuHandler {
     public char promptMainMenu() {
         System.out.println(MAIN_MENU_PROMPT);
         Scanner obj = new Scanner(System.in);
-        switch (obj.next().charAt(0)){
+
+        char input = 0;
+        while(true) {
+            input = obj.next().charAt(0);
+            if( input == 'i' || input == 'd' || input == 'q') {
+                break;
+            } else {
+                System.out.println( "Invalid input! Reenter your input ('i', 'd', or 'q'): " );
+            }
+        }
+
+        switch (input){
             case 'i':
                 System.out.println(INPUT_PROMPT);
                 return 'i';
             case 'd':
                 System.out.println(DISPLAY_PROMPT);
                 return 'd';
+            case 'q':
+                return 'q';
+
         }
         return 0;
     }
@@ -60,7 +74,7 @@ public class MenuHandler {
         System.out.print("Enter tenant's name: ");
         String name = obj.nextLine();
         System.out.print("Enter tenant's apartment number: ");
-        int number = obj.nextInt();
+        int number = getPositiveInt();
     }
 
     public void promptRentMenu() {
@@ -68,7 +82,7 @@ public class MenuHandler {
         System.out.print("Enter tenant's name: ");
         String name = obj.nextLine();
         System.out.print("Enter amount paid: ");
-        int amount  = obj.nextInt();
+        double amount  = getPositiveDouble();
         System.out.print("Enter month rent is for (1-12): ");
         int month = getIntRange(1,12);
     }
@@ -88,11 +102,11 @@ public class MenuHandler {
         String payee = obj.nextLine();
 
         System.out.print("Enter amount: ");
-        int amount = obj.nextInt();
+        double amount = getPositiveDouble();
 
     }
 
-    public static int getIntRange( int low, int high ) {
+    public int getIntRange( int low, int high ) {
         Scanner in = new Scanner( System.in );
         int input = 0;
         boolean valid = false;
@@ -102,15 +116,61 @@ public class MenuHandler {
                 if( input <= high && input >= low ) {
                     valid = true;
                 } else {
-                    System.out.println( "Invalid number! Re enter your input: " );
+                    System.out.println( "Invalid number! Reenter your input: " );
 
                 }
             } else {
-                in.next(); //clear invalid string
-                System.out.println( "Invalid Input." );
+                in.next();
+                System.out.println( "Invalid Input. Reenter your input: " );
             }
         }
         return input;
     }
+
+    public int getPositiveInt( ) {
+        Scanner in = new Scanner( System.in );
+        int input = 0;
+        boolean valid = false;
+        while( !valid ) {
+            if( in.hasNextInt() ) {
+                input = in.nextInt();
+                if( input >= 0 ) {
+                    valid = true;
+                } else {
+                    System.out.println( "Reenter a positive integer: " );
+                }
+            } else {
+                in.next();
+                System.out.println( "Invalid Input. Reenter a positive integer: " );
+            }
+        }
+        return input;
+    }
+
+    public double getPositiveDouble( ) {
+        Scanner in = new Scanner( System.in );
+        double input = 0.0;
+        boolean valid = false;
+        while( !valid ) {
+            if( in.hasNextDouble() ) {
+                input = in.nextDouble();
+                if( input >= 0 ) {
+                    valid = true;
+                } else {
+                    System.out.println( "Reenter a positive number: " );
+                }
+            } else {
+                in.next();
+                System.out.println( "Invalid Input. Reenter a positive number: " );
+            }
+        }
+        return input;
+    }
+
+
+
+
+
+
 
 }

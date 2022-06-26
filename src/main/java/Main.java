@@ -7,7 +7,7 @@ public class Main {
 
         MenuHandler menu = MenuHandler.getInstance();
         FileHandler file = FileHandler.getInstance();
-        Scanner input = new Scanner(System.in);
+        Scanner obj = new Scanner(System.in);
 
 //        // While Login Invalid...
 //        while (!menu.promptLogin()) {
@@ -20,7 +20,16 @@ public class Main {
             // Prompt Main Menu
             switch(menu.promptMainMenu()){
                 case 'i':
-                    switch (input.next().charAt(0)){
+                    char input = 0;
+                    while(true) {
+                        input = obj.next().charAt(0);
+                        if( input == 't' || input == 'r' || input == 'e') {
+                            break;
+                        } else {
+                            System.out.println( "Invalid input! Reenter your input ('t', 'r', or 'e'): " );
+                        }
+                    }
+                    switch (input){
                         case 't':
                             menu.promptTenantMenu();
                             break;
