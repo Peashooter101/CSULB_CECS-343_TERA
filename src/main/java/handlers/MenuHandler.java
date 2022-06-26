@@ -39,7 +39,7 @@ public class MenuHandler {
      * Prompt Main Menu and take user input.
      * TODO: Determine valid return type for this.
      */
-    public char promptMainMenu() {
+    public void promptMainMenu() {
         System.out.println(MAIN_MENU_PROMPT);
         Scanner obj = new Scanner(System.in);
 
@@ -56,15 +56,35 @@ public class MenuHandler {
         switch (input){
             case 'i':
                 System.out.println(INPUT_PROMPT);
-                return 'i';
+                while(true) {
+                    input = obj.next().charAt(0);
+                    if( input == 't' || input == 'r' || input == 'e') {
+                        break;
+                    } else {
+                        System.out.println( "Invalid input! Reenter your input ('t', 'r', or 'e'): " );
+                    }
+                }
+                switch (input){
+                    case 't':
+                        promptTenantMenu();
+                        break;
+                    case 'r':
+                        promptRentMenu();
+                        break;
+                    case 'e':
+                        promptExpenseMenu();
+                        break;
+                }
+                break;
             case 'd':
                 System.out.println(DISPLAY_PROMPT);
-                return 'd';
+                break;
             case 'q':
-                return 'q';
+                System.out.println("Quitting....");
+                System.exit(1);
+                break;
 
         }
-        return 0;
     }
 
     /**
@@ -97,6 +117,8 @@ public class MenuHandler {
         double amount  = getPositiveDouble();
         System.out.print("Enter month rent is for (1-12): ");
         int month = getIntRange(1,12);
+
+        //Checks if tenant is already in arraylist. If yes, then record his rent.
         List<Tenant> tenantList = Tenant.getTenants();
         for (Tenant t : tenantList){
             if (t.getName().equals(name)){
@@ -129,6 +151,9 @@ public class MenuHandler {
 
     /**
      * Takes in an input, validates input for correct range and returns it
+     * @param low int
+     * @param high int
+     * @return a valid int that fits in the range of low and high
      */
     public int getIntRange( int low, int high ) {
         Scanner in = new Scanner( System.in );
@@ -153,6 +178,7 @@ public class MenuHandler {
 
     /**
      * Takes in an input, validates input for positive int and returns it
+     * @return positive int
      */
     public int getPositiveInt( ) {
         Scanner in = new Scanner( System.in );
@@ -176,6 +202,7 @@ public class MenuHandler {
 
     /**
      * Takes in an input, validates input for positive double and returns it
+     * @return positive double
      */
     public double getPositiveDouble( ) {
         Scanner in = new Scanner( System.in );
