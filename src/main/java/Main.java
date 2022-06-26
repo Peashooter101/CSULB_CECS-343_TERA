@@ -7,7 +7,6 @@ public class Main {
 
         MenuHandler menu = MenuHandler.getInstance();
         FileHandler file = FileHandler.getInstance();
-        Scanner obj = new Scanner(System.in);
 
 //        // While Login Invalid...
 //        while (!menu.promptLogin()) {

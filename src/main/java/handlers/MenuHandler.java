@@ -37,7 +37,6 @@ public class MenuHandler {
 
     /**
      * Prompt Main Menu and take user input.
-     * TODO: Determine valid return type for this.
      */
     public void promptMainMenu() {
         System.out.println(MAIN_MENU_PROMPT);
@@ -102,8 +101,22 @@ public class MenuHandler {
         System.out.print("Enter tenant's name: ");
         String name = obj.nextLine();
         System.out.print("Enter tenant's apartment number: ");
-        int number = getPositiveInt();
-        Tenant.addTenant(name, number);
+        int aptNumber = getPositiveInt();
+
+        List<Tenant> tenantList = Tenant.getTenants();
+        if (tenantList == null) {
+            Tenant.addTenant(name, aptNumber);
+        }
+        else {
+            // Checks if apartment number is occupied. If not, then add tenant.
+            for (Tenant t : tenantList) {
+                if (t.getAptNum() == aptNumber) {
+                    System.out.println("The apartment is already occupied");
+                } else {
+                    Tenant.addTenant(name, aptNumber);
+                }
+            }
+        }
     }
 
     /**

@@ -74,7 +74,10 @@ public class Tenant {
      * @return Unmodifiable List of Tenants
      */
     public static List<Tenant> getTenants() {
-        return Collections.unmodifiableList(tenants);
+        if (tenants != null) {
+            return Collections.unmodifiableList(tenants);
+        }
+        return null;
     }
 
     public UUID getId() { return this.id; }
