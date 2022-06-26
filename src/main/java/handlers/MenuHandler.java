@@ -108,13 +108,16 @@ public class MenuHandler {
             Tenant.addTenant(name, aptNumber);
         }
         else {
+            boolean notOccupied = true;
             // Checks if apartment number is occupied. If not, then add tenant.
             for (Tenant t : tenantList) {
                 if (t.getAptNum() == aptNumber) {
                     System.out.println("The apartment is already occupied");
-                } else {
-                    Tenant.addTenant(name, aptNumber);
+                    notOccupied = false;
                 }
+            }
+            if (notOccupied){
+                Tenant.addTenant(name, aptNumber);
             }
         }
     }
