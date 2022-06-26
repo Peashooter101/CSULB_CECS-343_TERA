@@ -27,7 +27,7 @@ public class Rent {
      * Private Constructor
      * Creates a new Rent Object. Constructor called by addRent().
      */
-    public Rent(UUID tenantId, int year, int month, double payment) {
+    private Rent(UUID tenantId, int year, int month, double payment) {
         this.tenantId = tenantId;
         this.year = year;
         this.month = month;

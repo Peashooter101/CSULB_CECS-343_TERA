@@ -3,6 +3,7 @@ package handlers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import data.Expense;
 import data.Rent;
 import data.Tenant;
 
@@ -43,21 +44,29 @@ public class FileHandler {
     public boolean loadData() {
         try {
             // Loading Tenant File
-            if (fileTenant.exists()) {
+            if (fileTenant.exists() && fileTenant.length() > 0) {
                 ArrayList<Tenant> data = mapper.readValue(fileTenant, new TypeReference<>() {});
                 Tenant.loadTenants(data);
             } else {
-                MenuHandler.systemMessage("Tenant save file does not exist, ignoring...");
+                MenuHandler.systemMessage("Tenant save file does not exist or contains no data, ignoring...");
             }
-            // Loading Tenant File
-            if (fileRent.exists()) {
+            // Loading Rent File
+            if (fileRent.exists() && fileRent.length() > 0) {
                 ArrayList<Rent> data = mapper.readValue(fileRent, new TypeReference<>() {});
                 Rent.loadRent(data);
             } else {
-                MenuHandler.systemMessage("Rent save file does not exist, ignoring...");
+                MenuHandler.systemMessage("Rent save file does not exist or contains no data, ignoring...");
+            }
+            // Loading Expense File
+            if (fileExpense.exists() && fileExpense.length() > 0) {
+                ArrayList<Expense> data = mapper.readValue(fileExpense, new TypeReference<>() {});
+                Expense.loadExpenses(data);
+            } else {
+                MenuHandler.systemMessage("Expense save file does not exist or contains no data, ignoring...");
             }
         } catch (IOException e) {
             e.printStackTrace();
+            MenuHandler.systemMessage("An error has occurred, please look at the above Stacktrace for more info.");
             return false;
         }
         return true;
