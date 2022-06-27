@@ -1,4 +1,5 @@
 package handlers;
+import data.Expense;
 import data.Rent;
 import data.Tenant;
 
@@ -34,6 +35,19 @@ public class MenuHandler {
      * @return True on successful login, False otherwise.
      */
     public boolean promptLogin() {
+        String username, password;
+        Scanner obj = new Scanner(System.in);
+        System.out.println("Please login with your username and password.");
+        System.out.print("Username: ");
+        username = obj.nextLine();
+        System.out.print("Password: ");
+        password = obj.nextLine();
+
+        if (username.equals("Phuong") && password.equals("asd")){
+            return true;
+        }
+
+        System.out.println("Incorrect username or password. Please login again. ");
         return false;
     }
 
@@ -197,6 +211,7 @@ public class MenuHandler {
         System.out.print("Enter amount: ");
         double amount = getPositiveDouble();
 
+        Expense.addExpense(1, month, day, category, payee, amount);
     }
 
     /**

@@ -7,11 +7,13 @@ public class Main {
 
         MenuHandler menu = MenuHandler.getInstance();
         FileHandler file = FileHandler.getInstance();
+        Scanner obj = new Scanner(System.in);
 
-//        // While Login Invalid...
-//        while (!menu.promptLogin()) {
-//            // TODO: Invalid Login Details Logic
-//        }
+
+        // While Login Invalid...
+        while (!menu.promptLogin()) {
+        }
+
         // Load Saved Data
         file.loadData();
 
