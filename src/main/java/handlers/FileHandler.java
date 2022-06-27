@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import data.Expense;
 import data.Rent;
 import data.Tenant;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,6 +23,7 @@ public class FileHandler {
     private static final File fileTenant = new File(dir, "tenant.json");
     private static final File fileRent = new File(dir, "rent.json");
     private static final File fileExpense = new File(dir, "expense.json");
+    private static final File fileLogin = new File(dir, "login.json");
 
     private FileHandler() {}
 
@@ -96,14 +99,56 @@ public class FileHandler {
                 MenuHandler.systemMessage("No expense save file found, created file...");
             }
 
-            // Save Tenants
+            // Save Files
             mapper.writeValue(fileTenant, Tenant.getTenants());
+            mapper.writeValue(fileRent, Rent.getRent());
+            mapper.writeValue(fileExpense, Expense.getExpenses());
 
         } catch (IOException e) {
             e.printStackTrace();
+            MenuHandler.systemMessage("Failed to load data files, please see System Administrator.");
             return false;
         }
         return true;
+    }
+
+    /**
+     * Loads login details from Memory.
+     * Login Details exist as a HashMap, associating a Hashed Username to a Hashed Password.
+     * Defaults to "admin" and "password" by default.
+     * @return HashMap containing all hashed users and passwords, null otherwise.
+     */
+    public static HashMap<String, String> getLoginDetails() {
+        // Check for Directory, create if missing...
+        if (dir.mkdirs()) {
+            MenuHandler.systemMessage("No directory found, created directory...");
+        }
+
+        // Create file if missing.
+        if (!fileLogin.exists() || fileLogin.length() == 0) {
+            try {
+                if (fileLogin.createNewFile()) {
+                    MenuHandler.systemMessage("No login file found, created file...");
+                }
+                HashMap<String, String> defaultLogin = new HashMap<>();
+                DigestUtils sha = new DigestUtils("SHA3-256");
+                defaultLogin.put(sha.digestAsHex("admin"), sha.digestAsHex("password"));
+                mapper.writeValue(fileLogin, defaultLogin);
+            } catch (IOException e) {
+                e.printStackTrace();
+                MenuHandler.systemMessage("Failed to create login details file, please see System Administrator.");
+                return null;
+            }
+        }
+
+        // Return HashMap
+        try {
+            return mapper.readValue(fileLogin, new TypeReference<>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+            MenuHandler.systemMessage("Failed to load login details file, please see System Administrator.");
+        }
+        return null;
     }
 
 }

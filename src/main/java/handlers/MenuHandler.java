@@ -2,12 +2,11 @@ package handlers;
 import data.Expense;
 import data.Rent;
 import data.Tenant;
+import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.File;
 import java.security.KeyStore;
-import java.util.List;
-import java.util.Scanner;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class MenuHandler {
 
@@ -35,19 +34,32 @@ public class MenuHandler {
      * @return True on successful login, False otherwise.
      */
     public boolean promptLogin() {
+        DigestUtils sha = new DigestUtils("SHA3-256");
+        Scanner scan = new Scanner(System.in);
         String username, password;
-        Scanner obj = new Scanner(System.in);
+
+        // Fetch Login Details
+        HashMap<String, String> loginDetails = FileHandler.getLoginDetails();
+        if (loginDetails == null) {
+            MenuHandler.systemMessage("An error has occurred with the Login System. Please contact a System Administrator.");
+            MenuHandler.systemMessage("Press [ENTER] to continue. The program will be stuck in a login loop if not resolved.");
+            scan.nextLine();
+            return false;
+        }
+
+        // Prompt Login Details
         System.out.println("Please login with your username and password.");
         System.out.print("Username: ");
-        username = obj.nextLine();
+        username = sha.digestAsHex(scan.nextLine());
         System.out.print("Password: ");
-        password = obj.nextLine();
+        password = sha.digestAsHex(scan.nextLine());
 
-        if (username.equals("Phuong") && password.equals("asd")){
+        // Check Login Details
+        if (loginDetails.containsKey(username) && loginDetails.get(username).equals(password)){
             return true;
         }
 
-        System.out.println("Incorrect username or password. Please login again. ");
+        System.out.println("Incorrect username or password. Please login again.");
         return false;
     }
 
