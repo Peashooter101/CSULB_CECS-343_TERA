@@ -1,8 +1,14 @@
 package data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import handlers.FileHandler;
 import handlers.MenuHandler;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +18,10 @@ public class Rent {
 
     private static ArrayList<Rent> rent;
     private UUID tenantId;
-    private int year;
-    private int month;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate date;
     private double payment;
 
     /**
@@ -27,10 +35,9 @@ public class Rent {
      * Private Constructor
      * Creates a new Rent Object. Constructor called by addRent().
      */
-    private Rent(UUID tenantId, int year, int month, double payment) {
+    private Rent(UUID tenantId, LocalDate date, double payment) {
         this.tenantId = tenantId;
-        this.year = year;
-        this.month = month;
+        this.date = date;
         this.payment = payment;
     }
 
@@ -59,7 +66,7 @@ public class Rent {
             MenuHandler.systemMessage("Attempted to add Rent but the year is invalid.");
             return null;
         }
-        Rent r = new Rent(tenant.getId(), year, month, payment);
+        Rent r = new Rent(tenant.getId(), LocalDate.of(year, month, 1), payment);
         rent.add(r);
         return r;
     }
@@ -96,12 +103,14 @@ public class Rent {
      * @return Unmodifiable List of Rent Payments
      */
     public static List<Rent> getRent() {
-        return Collections.unmodifiableList(rent);
+        if (rent != null) {
+            return Collections.unmodifiableList(rent);
+        }
+        return null;
     }
 
     public Tenant getTenant() { return Tenant.getTenantByID(tenantId); }
-    public int getMonth() { return month; }
-    public int getYear() { return year; }
+    public LocalDate getDate() { return date; }
     public double getPayment() { return payment; }
 
 
@@ -116,8 +125,7 @@ public class Rent {
         if (o == this) { return true; }
         if (!(o instanceof Rent r)) { return false; }
         return this.getTenant().equals(r.getTenant()) &&
-                this.getMonth() == r.getMonth() &&
-                this.getYear() == r.getYear() &&
+                this.getDate().equals(r.getDate()) &&
                 this.getPayment() == r.getPayment();
     }
 }

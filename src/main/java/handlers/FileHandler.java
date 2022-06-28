@@ -1,6 +1,5 @@
 package handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import data.Expense;
@@ -12,9 +11,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
 
+/**
+ * Controls all file saving and loading.
+ * Utilizes Jackson Databind for JSON Processing.
+ * This class saves and loads all files and passes it to MenuHandler / data package classes as needed.
+ */
 public class FileHandler {
 
     private static FileHandler instance;

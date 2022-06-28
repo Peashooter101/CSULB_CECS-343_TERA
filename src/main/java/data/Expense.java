@@ -1,5 +1,10 @@
 package data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import handlers.FileHandler;
 import handlers.MenuHandler;
 
@@ -12,6 +17,9 @@ import java.util.List;
 public class Expense {
 
     private static ArrayList<Expense> expenses;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
     private String category;
     private String payee;
@@ -88,7 +96,10 @@ public class Expense {
      * @return Unmodifiable List of Expenses
      */
     public static List<Expense> getExpenses() {
-        return Collections.unmodifiableList(expenses);
+        if (expenses != null) {
+            return Collections.unmodifiableList(expenses);
+        }
+        return null;
     }
 
     public LocalDate getDate() { return date; }

@@ -1,8 +1,5 @@
 package data;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import handlers.FileHandler;
 import handlers.MenuHandler;
 
@@ -107,6 +104,11 @@ public class Tenant {
         if (o == this) { return true; }
         if (!(o instanceof Tenant t)) { return false; }
         return this.getId().equals(t.getId());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (Apt: %d)", this.name, this.aptNum);
     }
 
 }

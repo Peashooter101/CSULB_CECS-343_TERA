@@ -4,16 +4,84 @@ import data.Rent;
 import data.Tenant;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.io.File;
-import java.security.KeyStore;
 import java.util.*;
 
+/**
+ * Controls all menus and is the main execution control of the program.
+ * All Console Inputs and Outputs go through here.
+ * This menu will call data package classes for object creation.
+ */
 public class MenuHandler {
 
     private static MenuHandler instance;
-    private static final String MAIN_MENU_PROMPT = "Enter 'i' to input data,\n'd' to display a report, \n'q' to quit program: ";
-    private static final String INPUT_PROMPT = "Enter 't' to add tenant,\n'r' to record rent payment, \n'e' to record expense: ";
-    private static final String DISPLAY_PROMPT = "Enter 't' to displays tenants,\n'r' to display rents, \n'e' to display expenses, \n'a' to display annual report: ";
+    private static final String MAIN_MENU_PROMPT =
+            """
+                    ╓──┤ Main Menu ├──
+                    ║ Please select an option:
+                    ║ i) Input Data
+                    ║ d) Display Reports
+                    ║ q) Quit
+                    ╙─────""";
+    private static final String INPUT_PROMPT =
+            """
+                    ╓──┤ Input Menu ├──
+                    ║ Please select an option:
+                    ║ t) Record Tenant Information
+                    ║ r) Record Rent Payment
+                    ║ e) Record Expense
+                    ║ q) Return to Main Menu
+                    ╙─────""";
+    private static final String DISPLAY_REPORTS_PROMPT =
+            """
+                    ╓──┤ Display Reports Menu ├──
+                    ║ Please select an option:
+                    ║ t) Tenant Records
+                    ║ e) Expense Records
+                    ║ r) Rent Records
+                    ║ a) Annual Report
+                    ║ q) Return to Main Menu
+                    ╙─────""";
+    private static final String INPUT_TENANT =
+            """
+                    ╓──┤ Inputting Tenant ├──
+                    ║ NOTE: This operation assumes the most recent
+                    ║       tenant input will be the current resident.
+                    ║ Input "q" to return to the previous menu.
+                    ║ Press [ENTER] to continue
+                    ╙─────""";
+    private static final String INPUT_EXPENSE = "";
+    private static final String INPUT_RENT =
+            """
+                    ╓──┤ Rent Notice ├──
+                    ║ NOTE: Rent will require you to have the Tenant's name
+                    ║       and apartment number.
+                    ║
+                    ║ The Rent input assumes the most recent entry to Tenants
+                    ║ that matches the name and apartment number is the current one.
+                    ║
+                    ║ Input "q" to return to the previous menu.
+                    ║ Press [ENTER] to continue.
+                    ╙─────""";
+    private static final String RECENT_TENANT =
+            """
+                    ╓──┤ Tenant Warning ├──
+                    ║ There is currently a tenant assigned to this apartment number:
+                    ║   %s
+                    ║
+                    ║ By inputting this new tenant, all new rent payments for this apartment
+                    ║ number will be associated to this tenant.
+                    ║
+                    ║ Input "q" to return to the previous menu.
+                    ║ Press [ENTER] to continue and override this tenant.
+                    ╙─────""";
+    private static final String NEW_RENT =
+            """
+                    ╓──┤ Rent Confirmation ├──
+                    ║ There is currently a tenant assigned to this apartment number:
+                    ║
+                    ║ Input "q" to return to the previous menu.
+                    ║ Press [ENTER] to continue and create the new rent entry.
+                    ╙─────""";
 
     private MenuHandler() {}
 
@@ -33,85 +101,165 @@ public class MenuHandler {
      * Prompts the user for login details.
      * @return True on successful login, False otherwise.
      */
-    public boolean promptLogin() {
+    public void promptLogin() {
         DigestUtils sha = new DigestUtils("SHA3-256");
         Scanner scan = new Scanner(System.in);
         String username, password;
 
         // Fetch Login Details
         HashMap<String, String> loginDetails = FileHandler.getLoginDetails();
-        if (loginDetails == null) {
-            MenuHandler.systemMessage("An error has occurred with the Login System. Please contact a System Administrator.");
-            MenuHandler.systemMessage("Press [ENTER] to continue. The program will be stuck in a login loop if not resolved.");
-            scan.nextLine();
-            return false;
+        while (true) {
+            if (loginDetails == null) {
+                MenuHandler.systemMessage("An error has occurred with the Login System. Please contact a System Administrator.");
+                MenuHandler.systemMessage("Press [ENTER] to continue. The program will be stuck in a login loop if not resolved.");
+                scan.nextLine();
+                continue;
+            }
+
+            // Prompt Login Details
+            System.out.println("Please login with your username and password.");
+            System.out.print("Username: ");
+            username = sha.digestAsHex(scan.nextLine());
+            System.out.print("Password: ");
+            password = sha.digestAsHex(scan.nextLine());
+
+            // Check Login Details
+            if (loginDetails.containsKey(username) && loginDetails.get(username).equals(password)) { break; }
+            MenuHandler.systemMessage("Incorrect username or password. Please try again.");
         }
-
-        // Prompt Login Details
-        System.out.println("Please login with your username and password.");
-        System.out.print("Username: ");
-        username = sha.digestAsHex(scan.nextLine());
-        System.out.print("Password: ");
-        password = sha.digestAsHex(scan.nextLine());
-
-        // Check Login Details
-        if (loginDetails.containsKey(username) && loginDetails.get(username).equals(password)){
-            return true;
-        }
-
-        System.out.println("Incorrect username or password. Please login again.");
-        return false;
     }
 
     /**
      * Prompt Main Menu and take user input.
      */
     public void promptMainMenu() {
-        System.out.println(MAIN_MENU_PROMPT);
-        Scanner obj = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
+        String input = "";
 
-        char input = 0;
-        while(true) {
-            input = obj.next().charAt(0);
-            if( input == 'i' || input == 'd' || input == 'q') {
-                break;
-            } else {
-                System.out.println( "Invalid input! Reenter your input ('i', 'd', or 'q'): " );
+        while (!input.equalsIgnoreCase("q")) {
+            System.out.println(MAIN_MENU_PROMPT);
+            System.out.print("Your Choice: ");
+            input = scan.nextLine().toLowerCase();
+
+            switch(input) {
+                case "i" -> promptInputMenu();
+                case "d" -> promptReportMenu();
+                case "q" -> {}
+                default -> MenuHandler.systemMessage("Your input is invalid, please try again...");
             }
         }
 
-        switch (input){
-            case 'i':
-                System.out.println(INPUT_PROMPT);
-                while(true) {
-                    input = obj.next().charAt(0);
-                    if( input == 't' || input == 'r' || input == 'e') {
-                        break;
-                    } else {
-                        System.out.println( "Invalid input! Reenter your input ('t', 'r', or 'e'): " );
-                    }
-                }
-                switch (input){
-                    case 't':
-                        promptTenantMenu();
-                        break;
-                    case 'r':
-                        promptRentMenu();
-                        break;
-                    case 'e':
-                        promptExpenseMenu();
-                        break;
-                }
-                break;
-            case 'd':
-                System.out.println(DISPLAY_PROMPT);
-                break;
-            case 'q':
-                System.out.println("Quitting....");
-                System.exit(1);
-                break;
+        MenuHandler.systemMessage("Exiting program...");
+    }
 
+    /**
+     * Prompt Input Menus and take user input.
+     */
+    public void promptInputMenu() {
+        Scanner scan = new Scanner(System.in);
+        String input = "";
+        boolean loop = true;
+
+        while (loop) {
+            System.out.println(INPUT_PROMPT);
+            System.out.print("Your Choice: ");
+            input = scan.nextLine().toLowerCase();
+
+            switch(input) {
+                case "t" -> promptInputTenant();
+                case "r" -> promptInputRent();
+                case "e" -> promptInputExpense();
+                case "q" -> loop = false;
+                default -> MenuHandler.systemMessage("Your input is invalid, please try again...");
+            }
         }
+
+        MenuHandler.systemMessage("Returning to main menu...");
+    }
+
+    public void promptReportMenu() {
+        Scanner scan = new Scanner(System.in);
+        String input = "";
+        boolean loop = true;
+
+        while (loop) {
+            System.out.println(DISPLAY_REPORTS_PROMPT);
+            System.out.print("Your Choice: ");
+            input = scan.nextLine().toLowerCase();
+
+            switch(input) {
+                case "t" -> displayTenants();
+                case "e" -> displayExpenses();
+                case "r" -> displayRent();
+                case "a" -> displayAnnualReport();
+                case "q" -> loop = false;
+                default -> MenuHandler.systemMessage("Your input is invalid, please try again...");
+            }
+        }
+
+        MenuHandler.systemMessage("Returning to main menu...");
+    }
+
+    public void displayTenants() {
+        List<Tenant> tenants = Tenant.getTenants();
+
+        // If there are no tenants
+        if (tenants == null || tenants.isEmpty()) {
+            MenuHandler.systemMessage("There are no Tenants to display...");
+            return;
+        }
+
+        // Build tenants string to print out
+        StringBuilder display = new StringBuilder("╓──┤ Display Tenants ├──\n");
+        for (int i = tenants.size()-1; i >= 0; i--) {
+            display.append(String.format("║ %s\n", tenants.get(i)));
+        }
+        display.append("╙─────");
+
+        System.out.println(display);
+    }
+
+    public void displayExpenses() {
+        List<Expense> expenses = Expense.getExpenses();
+
+        // If there are no expenses
+        if (expenses == null || expenses.isEmpty()) {
+            MenuHandler.systemMessage("There are no Expenses to display...");
+            return;
+        }
+
+        // Build expenses string to print out
+        StringBuilder display = new StringBuilder("╓──┤ Display Expenses ├──\n");
+        for (int i = expenses.size()-1; i >= 0; i--) {
+            display.append(String.format("║ %s\n", expenses.get(i)));
+        }
+        display.append("╙─────");
+
+        System.out.println(display);
+    }
+
+    public void displayRent() {
+        List<Rent> rent = Rent.getRent();
+
+        // If there are no rent records
+        if (rent == null || rent.isEmpty()) {
+            MenuHandler.systemMessage("There are no Rent Payments to display...");
+            return;
+        }
+
+        // Build rent records string to print out
+        StringBuilder display = new StringBuilder("╓──┤ Display Rent ├──\n");
+        for (int i = rent.size()-1; i >= 0; i--) {
+            display.append(String.format("║ %s\n", rent.get(i)));
+        }
+        display.append("╙─────");
+
+        System.out.println(display);
+    }
+
+    public void displayAnnualReport() {
+        // TODO: Display Annual Report
+        MenuHandler.systemMessage("Not yet implemented.");
     }
 
     /**
@@ -122,91 +270,94 @@ public class MenuHandler {
     }
 
     /**
-     * Prompts tenant menu
+     * Prompts tenant input
      */
-    public void promptTenantMenu() {
-        Scanner obj = new Scanner(System.in);
-        System.out.print("Enter tenant's name: ");
-        String name = obj.nextLine();
-        System.out.print("Enter tenant's apartment number: ");
-        int aptNumber = getPositiveInt();
+    public void promptInputTenant() {
+        Scanner scan = new Scanner(System.in);
+        String name;
+        int apt;
 
+        // Display Tenant Notice and cancel
+        System.out.println(INPUT_TENANT);
+        if (scan.nextLine().equalsIgnoreCase("q")) { return; }
+
+        // Prompt for inputs
+        System.out.print("Enter tenant's name: ");
+        name = scan.nextLine();
+        System.out.print("Enter tenant's apartment number: ");
+        apt = getPositiveInt();
+
+        // Search for possible conflict
         List<Tenant> tenantList = Tenant.getTenants();
-        if (tenantList == null) {
-            Tenant.addTenant(name, aptNumber);
-        }
-        else {
-            boolean notOccupied = true;
-            // Checks if apartment number is occupied. If not, then add tenant.
-            for (Tenant t : tenantList) {
-                if (t.getAptNum() == aptNumber) {
-                    System.out.println("The apartment is already occupied");
-                    notOccupied = false;
+        if (tenantList != null && !tenantList.isEmpty()) {
+            Tenant t = null;
+            // Search for the most recent tenant with a conflict
+            for (int i = tenantList.size() - 1; i >= 0; i--) {
+                if (apt == tenantList.get(i).getAptNum()) {
+                    t = tenantList.get(i);
+                    break;
                 }
             }
-            if (notOccupied){
-                Tenant.addTenant(name, aptNumber);
+            // If there is a conflict, display warning and take input for quit or continue
+            if (t != null) {
+                System.out.printf(RECENT_TENANT + "\n", t);
+                if (scan.nextLine().equalsIgnoreCase("q")) { return; }
             }
         }
+        MenuHandler.systemMessage("Added Tenant: " + Tenant.addTenant(name, apt));
     }
 
     /**
      * Prompts rent menu
      */
-    public void promptRentMenu() {
-        Scanner obj = new Scanner(System.in);
-        System.out.print("Enter tenant's name: ");
-        String name = obj.nextLine();
-
-        int duplicateNames = 0;
-        //Checks if tenant is already in arraylist. If yes, then record his rent.
+    public void promptInputRent() {
         List<Tenant> tenantList = Tenant.getTenants();
-        for (Tenant t : tenantList){
-            if (t.getName().equals(name)){
-                duplicateNames += 1;
+        Scanner scan = new Scanner(System.in);
+        int apt, year, month;
+        double payment;
+
+        // Check if any tenants exist.
+        if (tenantList == null || tenantList.isEmpty()) {
+            MenuHandler.systemMessage("There are no tenants to add rent to.");
+            return;
+        }
+
+        // Display Rent notice and cancel
+        System.out.println(INPUT_RENT);
+        if (scan.nextLine().equalsIgnoreCase("q")) { return; }
+
+        // Prompt for input
+        System.out.print("Enter tenant's apartment number: ");
+        apt = getPositiveInt();
+        System.out.print("Enter year: ");
+        year = getPositiveInt();
+        System.out.print("Enter month: ");
+        month = getIntRange(1, 12);
+        System.out.print("Enter payment: ");
+        payment = getPositiveDouble();
+
+        // Search for the most recent tenant with matching apartment number
+        Tenant t = null;
+        for (int i = tenantList.size() - 1; i >= 0; i--) {
+            if (apt == tenantList.get(i).getAptNum()) {
+                t = tenantList.get(i);
+                break;
             }
         }
 
-        // If there's no duplicates
-        if (duplicateNames == 1){
-            System.out.print("Enter amount paid: ");
-            double amount  = getPositiveDouble();
-            System.out.print("Enter month rent is for (1-12): ");
-            int month = getIntRange(1,12);
-            for (Tenant t : tenantList) {
-                Rent.addRent(Tenant.getTenantByID(t.getId()), 1, month, amount);
-            }
+        // Confirm rent association
+        if (t != null) {
+            System.out.println(NEW_RENT);
+            if (scan.nextLine().equalsIgnoreCase("q")) { return; }
         }
-
-        // Makes user choose which duplicate name they'd like to record rent for.
-        // Uses a hashmap to store the choice and UUID of duplicate.
-        int duplicateChoice;
-        if (duplicateNames >= 2){
-            HashMap<Integer, UUID> map = new HashMap<Integer, UUID>();
-            System.out.println("There is a duplicate name in your system!");
-            System.out.println("Please choose which person you'd like to choose based on their apartment number: ");
-            int choice = 1;
-            for (Tenant t : tenantList){
-                if (t.getName().equals(name)){
-                    System.out.println(choice + ". " + t.getName() + ": Apartment Number " + t.getAptNum());
-                    map.put(choice, t.getId());
-                    choice += 1;
-                }
-            }
-            duplicateChoice = getIntRange(1, choice);
-
-            System.out.print("Enter amount paid: ");
-            double amount  = getPositiveDouble();
-            System.out.print("Enter month rent is for (1-12): ");
-            int month = getIntRange(1,12);
-            Rent.addRent(Tenant.getTenantByID(map.get(duplicateChoice)), 1, month, amount);
-        }
+        MenuHandler.systemMessage("Added Rent: " + Rent.addRent(t, year, month, payment));
     }
 
     /**
      * Prompts expense menu
+     * TODO: Look over and resolve any issues.
      */
-    public void promptExpenseMenu() {
+    public void promptInputExpense() {
         Scanner obj = new Scanner(System.in);
         System.out.print("Enter month (1-12): ");
         int month = getIntRange(1,12);

@@ -7,21 +7,19 @@ public class Main {
 
         MenuHandler menu = MenuHandler.getInstance();
         FileHandler file = FileHandler.getInstance();
-        Scanner obj = new Scanner(System.in);
 
 
         // While Login Invalid...
-        while (!menu.promptLogin()) {
-        }
+        menu.promptLogin();
 
         // Load Saved Data
         file.loadData();
 
-        while(true) {
-            // Prompt Main Menu
-            menu.promptMainMenu();
+        // Prompt Main Menu
+        menu.promptMainMenu();
 
-        }
+        // Save Current Data
+        file.saveData();
 
     }
 
