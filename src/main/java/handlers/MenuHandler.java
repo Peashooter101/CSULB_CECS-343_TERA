@@ -183,6 +183,8 @@ public class MenuHandler {
                 case "q" -> loop = false;
                 default -> MenuHandler.systemMessage("Your input is invalid, please try again...");
             }
+
+            FileHandler.getInstance().saveData();
         }
 
         MenuHandler.systemMessage("Returning to main menu...");
@@ -369,8 +371,9 @@ public class MenuHandler {
 
             System.out.printf(NEW_RENT + "\n", t);
             if (scan.nextLine().equalsIgnoreCase("q")) { return; }
+            MenuHandler.systemMessage("Added Rent: " + Rent.addRent(t, year, month, payment));
         }
-        MenuHandler.systemMessage("Added Rent: " + Rent.addRent(t, year, month, payment));
+        MenuHandler.systemMessage("There is no tenant to associate to.");
     }
 
     /**
