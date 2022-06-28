@@ -1,9 +1,11 @@
 package handlers;
+import data.AnnualReport;
 import data.Expense;
 import data.Rent;
 import data.Tenant;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -49,7 +51,16 @@ public class MenuHandler {
                     ║ Input "q" to return to the previous menu.
                     ║ Press [ENTER] to continue
                     ╙─────""";
-    private static final String INPUT_EXPENSE = "";
+    private static final String INPUT_EXPENSE =
+            """
+                    ╓──┤ Expense Notice ├──
+                    ║ The expense requires you to have the month, day, year of payment,
+                    ║ the payment amount, payee name, and category of expense.
+                    ║ Most information is for reporting.
+                    ║
+                    ║ Input "q" to return to the previous menu.
+                    ║ Press [ENTER] to continue.
+                    ╙─────""";
     private static final String INPUT_RENT =
             """
                     ╓──┤ Rent Notice ├──
@@ -78,7 +89,7 @@ public class MenuHandler {
             """
                     ╓──┤ Rent Confirmation ├──
                     ║ There is currently a tenant assigned to this apartment number:
-                    ║
+                    ║   %s
                     ║ Input "q" to return to the previous menu.
                     ║ Press [ENTER] to continue and create the new rent entry.
                     ╙─────""";
@@ -258,8 +269,8 @@ public class MenuHandler {
     }
 
     public void displayAnnualReport() {
-        // TODO: Display Annual Report
-        MenuHandler.systemMessage("Not yet implemented.");
+        System.out.print("Enter the year for the report: ");
+        System.out.println(AnnualReport.generateReport(getPositiveInt()));
     }
 
     /**
@@ -347,7 +358,16 @@ public class MenuHandler {
 
         // Confirm rent association
         if (t != null) {
-            System.out.println(NEW_RENT);
+            // Duplicate check
+            if (Rent.getRent() != null) {
+                for (Rent r : Rent.getRent()) {
+                    if (r.checkDuplicate(t, LocalDate.of(year, month, 1), payment)) {
+                        MenuHandler.systemMessage("This is a duplicate entry, ignoring...");
+                    }
+                }
+            }
+
+            System.out.printf(NEW_RENT + "\n", t);
             if (scan.nextLine().equalsIgnoreCase("q")) { return; }
         }
         MenuHandler.systemMessage("Added Rent: " + Rent.addRent(t, year, month, payment));
@@ -358,23 +378,31 @@ public class MenuHandler {
      * TODO: Look over and resolve any issues.
      */
     public void promptInputExpense() {
-        Scanner obj = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
+
+        // Display Rent notice and cancel
+        System.out.println(INPUT_EXPENSE);
+        if (scan.nextLine().equalsIgnoreCase("q")) { return; }
+
         System.out.print("Enter month (1-12): ");
         int month = getIntRange(1,12);
 
         System.out.print("Enter day (1-31): ");
         int day = getIntRange(1,31);
 
+        System.out.print("Enter year: ");
+        int year = getPositiveInt();
+
         System.out.print("Enter expense category (Repairing, Utilities): ");
-        String category = obj.nextLine();
+        String category = scan.nextLine();
 
         System.out.print("Enter payee (Bob's Hardware, Big Electric Co): ");
-        String payee = obj.nextLine();
+        String payee = scan.nextLine();
 
         System.out.print("Enter amount: ");
         double amount = getPositiveDouble();
 
-        Expense.addExpense(1, month, day, category, payee, amount);
+        Expense.addExpense(year, month, day, category, payee, amount);
     }
 
     /**

@@ -1,6 +1,7 @@
 package data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -109,10 +110,19 @@ public class Rent {
         return null;
     }
 
+    @JsonIgnore
     public Tenant getTenant() { return Tenant.getTenantByID(tenantId); }
+    public UUID getTenantId() { return tenantId; }
     public LocalDate getDate() { return date; }
     public double getPayment() { return payment; }
 
+    public boolean checkDuplicate(Tenant t, LocalDate date, double payment) {
+        if (this.payment != payment) { return false; }
+        if (!this.date.equals(date)) { return false; }
+        if (Tenant.getTenantByID(this.tenantId) == null) { return false; }
+        if (!Tenant.getTenantByID(this.tenantId).equals(t)) { return false; }
+        return true;
+    }
 
     /**
      * Returns if the rent is the same rent.
@@ -127,5 +137,10 @@ public class Rent {
         return this.getTenant().equals(r.getTenant()) &&
                 this.getDate().equals(r.getDate()) &&
                 this.getPayment() == r.getPayment();
+    }
+
+    @Override
+    public String toString() {
+        return getTenant() + " - " + this.payment + " (" + this.date.getMonth() + " " + this.date.getYear() + ")";
     }
 }

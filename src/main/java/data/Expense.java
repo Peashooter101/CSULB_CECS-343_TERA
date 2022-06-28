@@ -118,8 +118,13 @@ public class Expense {
         if (o == this) { return true; }
         if (!(o instanceof Expense e)) { return false; }
         return this.getDate().equals(e.getDate()) &&
-                this.getCategory().equals(e.getCategory()) &&
-                this.getPayee().equals(e.getPayee()) &&
+                this.getCategory().equalsIgnoreCase(e.getCategory()) &&
+                this.getPayee().equalsIgnoreCase(e.getPayee()) &&
                 this.getPayment() == e.getPayment();
+    }
+
+    @Override
+    public String toString() {
+        return this.payee + " (" + this.category + ") - " + this.payment + " (" + this.date.getMonth() + " " + this.date.getDayOfMonth() + ", " + this.date.getYear() + ")";
     }
 }
